@@ -37,7 +37,7 @@ def send_GCode(GCode):
 
     try:
         # Perform a simple command and wait for its output
-        res = command_connection.perform_simple_code("Gcode")
+        res = command_connection.perform_simple_code(GCode)
         print(res)
     finally:
         command_connection.close()
