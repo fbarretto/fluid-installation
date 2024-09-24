@@ -1,13 +1,14 @@
 class Interpolator:
-    def __init__(self, max_x=200, max_y=200, min_feedrate=1, max_feedrate=10000):
+    def __init__(self, max_x=200, max_y=200, min_feedrate=1, max_feedrate=10000, num_points_factor=100):
         self.MAX_X = max_x
         self.MAX_Y = max_y
         self.MIN_FEEDRATE = min_feedrate
         self.MAX_FEEDRATE = max_feedrate
+        self.num_points_factor = num_points_factor
 
-    def interpolate_points_with_cubic_ease(self, norm_origin, norm_destination, max_accel=1.0, min_accel=0.001):
+    def interpolate_points_with_cubic_ease(self, norm_origin, norm_destination, skip_duplicate_acc = True, max_accel=1.0, min_accel=0.001):
         distance = ((norm_destination[0] - norm_origin[0]) ** 2 + (norm_destination[1] - norm_origin[1]) ** 2) ** 0.5
-        num_points = max(5, int(distance * 100))
+        num_points = max(5, int(distance * self.num_points_factor))
         
         interpolated_points = []
         for i in range(num_points):
@@ -19,7 +20,7 @@ class Interpolator:
             accel_factor = min(6 * t * (1 - t), 1)
             accel_factor = min_accel + (max_accel - min_accel) * accel_factor
             
-            if interpolated_points and interpolated_points[-1][2] == max_accel and accel_factor == max_accel:
+            if skip_duplicate_acc and interpolated_points and interpolated_points[-1][2] == max_accel and accel_factor == max_accel:
                 continue
             
             interpolated_points.append((x, y, accel_factor))
