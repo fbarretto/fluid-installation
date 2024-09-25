@@ -1,15 +1,15 @@
 from interpolation import Interpolator
-# from dsf.connections import CommandConnection
+from dsf.connections import CommandConnection
 
 MAX_X = 200
 MAX_Y = 200
-MIN_FEEDRATE = 0
-MAX_FEEDRATE = 10000
-NUM_POINTS_FACTOR = 50 # Number of points per unit of normalized distance: higher values means more points.
+MIN_FEEDRATE = 1000 # this is arbitrary
+MAX_FEEDRATE = 10608 # Max Possible Feedrate (Max Speed is 176.8 mm/sec)
+NUM_POINTS_FACTOR = 100 # Number of points per unit of normalized distance: higher values means more points.
 
 def main():
     origin = (0, 0)
-    destination = (150, 80)
+    destination = (200, 200)
     
     # Create an interpolator object
     interpolator = Interpolator(max_x=MAX_X, max_y=MAX_Y, min_feedrate=MIN_FEEDRATE, max_feedrate=MAX_FEEDRATE, num_points_factor=NUM_POINTS_FACTOR)
@@ -19,12 +19,12 @@ def main():
     
     #interpolate points, set skip_duplicate_acc to True to skip points with the same acceleration
     points = interpolator.interpolate_points_with_cubic_ease(norm_origin, norm_destination, skip_duplicate_acc=True)
-    
+
     #convert points to gcode
     for point in points:
         GCode = interpolator.point_to_gcode(point)
-        print(GCode)
-        #send_simple_code(GCode)
+        # print(GCode)
+        send_GCode(GCode)
 
 
 def normalize_points(origin, destination):
@@ -38,7 +38,7 @@ def send_GCode(GCode):
 
     try:
         # Perform a simple command and wait for its output
-        res = command_connection.perform_simple_code(GCode)
+        res = command_connection.perform_simple_code(GCode, async_exec = True)
         print(res)
     finally:
         command_connection.close()
