@@ -1,8 +1,8 @@
 from interpolation import Interpolator
 from dsf.connections import CommandConnection
 
-MAX_X = 200
-MAX_Y = 200
+MAX_X = 290
+MAX_Y = 250
 MIN_FEEDRATE = 1000 # this is arbitrary
 MAX_FEEDRATE = 10608 # Max Possible Feedrate (Max Speed is 176.8 mm/sec)
 NUM_POINTS_FACTOR = 100 # Number of points per unit of normalized distance: higher values means more points.
