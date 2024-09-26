@@ -10,7 +10,6 @@ NUM_POINTS_FACTOR = 100 # Number of points per unit of normalized distance: high
 
 def main():
     current_position = (0, 0)
-
     while True:
         origin = current_position
         destination = (random.randrange(0, MAX_X), random.randrange(0, MAX_Y))
@@ -30,8 +29,10 @@ def main():
             # print(GCode)
             send_GCode(GCode)
         
+        distance = ((destination[0] - origin[0]) ** 2 + (destination[1] - origin[1]) ** 2) ** 0.5
+        print(destination)
         current_position = destination
-        time.sleep(2)
+        time.sleep(distance/MAX_FEEDRATE * 10) # wait until the movement is complete, then generate the next point to move to (THIS IS AN APPROXIMATION)
 
 def normalize_points(origin, destination):
     norm_origin = (origin[0] / MAX_X, origin[1] / MAX_Y)
@@ -45,7 +46,7 @@ def send_GCode(GCode):
     try:
         # Perform a simple command and wait for its output
         res = command_connection.perform_simple_code(GCode, async_exec = True)
-        print(res)
+        #print(res)
     finally:
         command_connection.close()
 
