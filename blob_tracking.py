@@ -2,7 +2,25 @@ import cv2
 import numpy as np
 
 # Initialize the camera
-cap = cv2.VideoCapture(0)
+# List available cameras
+index = 0
+arr = []
+while True:
+    cap = cv2.VideoCapture(index)
+    if not cap.read()[0]:
+        break
+    else:
+        arr.append(index)
+    cap.release()
+    index += 1
+
+print("Available cameras:", arr)
+
+# Initialize the camera (using the first available camera)
+if arr:
+    cap = cv2.VideoCapture(arr[0])
+else:
+    raise Exception("No cameras found")
 
 # Define the color range for blob detection (in HSV format)
 lower_color = np.array([30, 100, 100])  
