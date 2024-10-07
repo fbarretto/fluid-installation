@@ -1,26 +1,8 @@
+#!/usr/bin/python3
+
 import cv2
 import numpy as np
-
-# Initialize the camera
-# List available cameras
-index = 0
-arr = []
-while True:
-    cap = cv2.VideoCapture(index)
-    if not cap.read()[0]:
-        break
-    else:
-        arr.append(index)
-    cap.release()
-    index += 1
-
-print("Available cameras:", arr)
-
-# Initialize the camera (using the first available camera)
-if arr:
-    cap = cv2.VideoCapture(arr[0])
-else:
-    raise Exception("No cameras found")
+from picamera2 import Picamera2
 
 # Define the color range for blob detection (in HSV format)
 lower_color = np.array([30, 100, 100])  
@@ -35,12 +17,16 @@ params.maxArea = 2000  # Maximum blob area
 # Create a detector with the parameters
 detector = cv2.SimpleBlobDetector_create(params)
 
+# Initialize Picamera2
+picam2 = Picamera2()
+picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640, 480)}))
+picam2.start()
+
+cv2.startWindowThread()
+
 while True:
     # Capture frame-by-frame
-    ret, frame = cap.read()
-    if not ret:
-        print("Failed to grab frame")
-        break
+    frame = picam2.capture_array()
 
     # Convert the frame to HSV (hue, saturation, value)
     hsv_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
@@ -62,6 +48,6 @@ while True:
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release the camera and close windows
-cap.release()
+# Release resources and close windows
 cv2.destroyAllWindows()
+picam2.stop()
